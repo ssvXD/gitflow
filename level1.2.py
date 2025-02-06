@@ -7,6 +7,7 @@ pygame.init()
 # Initialize all_sprites group
 all_sprites = pygame.sprite.Group()
 
+
 def load_image(filename):
     try:
         image = pygame.image.load(filename)
@@ -14,6 +15,7 @@ def load_image(filename):
     except pygame.error as e:
         print(f"Не удалось загрузить изображение: {filename}. Ошибка: {e}")
         sys.exit()
+
 
 # AnimatedSprite class definition
 class AnimatedSprite(pygame.sprite.Sprite):
@@ -26,6 +28,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.is_jumping = False
+        self.jump_count = 10
+        self.original_y = y
+        self.mask = pygame.mask.from_surface(self.image)  # Создаем маску
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -44,6 +50,21 @@ class AnimatedSprite(pygame.sprite.Sprite):
             else:
                 self.image = self.frames[self.cur_frame]
 
+        if self.is_jumping:
+            self.jump()
+
+    def jump(self):
+        if self.jump_count >= -10:
+            neg = 1
+            if self.jump_count < 0:
+                neg = -1
+            self.rect.y -= (self.jump_count ** 2) * 0.1 * neg
+            self.jump_count -= 1
+        else:
+            self.is_jumping = False
+            self.jump_count = 10
+            self.rect.y = self.original_y
+
 
 class FireSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, x, y):
@@ -57,6 +78,9 @@ class FireSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x, y))
         self.animation_speed = 0.1  # Скорость анимации
         self.last_update = pygame.time.get_ticks()
+        self.x = x  # Сохраняем координату x
+        self.y = y  # Сохраняем координату y
+        self.mask = pygame.mask.from_surface(self.image)  # Создаем маску
 
     def cut_sheet(self, sheet, columns, rows):
         frame_width = sheet.get_width() // columns
@@ -98,15 +122,19 @@ FPS = 60
 WALL_COLOR = (255, 0, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 GAME_OVER_COLOR = (128, 0, 0)
-START_COLOR = (0, 255, 225)
-END_COLOR = (0, 0, 255)
+START_COLOR = (128, 0, 0)
+END_COLOR = (0, 255, 0)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Лабиринт в аду")
 
 walls = [
-    pygame.Rect(50, 100, 100, 20),
-    pygame.Rect(200, 100, 100, 20)
+    pygame.Rect(50, 190, 100, 20),
+    pygame.Rect(200, 190, 100, 20),
+    pygame.Rect(350, 190, 100, 20),
+    pygame.Rect(500, 190, 100, 20),
+    pygame.Rect(590, 540, 100, 20)
+
 ]
 
 start_point = pygame.Rect(50, 50, 50, 50)
@@ -114,17 +142,20 @@ end_point = pygame.Rect(700, 500, 50, 50)
 
 # Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
-fire = FireSprite(fire_sheet, 9, 1, 150, 50)  # Создаем спрайт огня
-fire.rect.width = 100
-fire.rect.height = 100
+fire = FireSprite(fire_sheet, 9, 1, 150, 0)  # Создаем спрайт огня
+fire2 = FireSprite(fire_sheet, 9, 1, 300, 0)
+fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)
+
 
 def draw_walls():
     for wall in walls:
         pygame.draw.rect(screen, WALL_COLOR, wall)
 
+
 def draw_start_end():
     pygame.draw.rect(screen, START_COLOR, start_point)
     pygame.draw.rect(screen, END_COLOR, end_point)
+
 
 def game_over_screen(screen):
     screen.fill(GAME_OVER_COLOR)
@@ -136,6 +167,7 @@ def game_over_screen(screen):
     pygame.time.delay(3000)
     ENV.display_screen = 0
 
+
 def level_1(screen):
     clock = pygame.time.Clock()
     running = True
@@ -144,6 +176,10 @@ def level_1(screen):
             if event.type == pygame.QUIT:
                 ENV.display_screen = None
                 return
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Change K_w to K_SPACE
+                    dragon.is_jumping = True
+                    dragon.original_y = dragon.rect.y
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d]:  # Move right
@@ -167,8 +203,10 @@ def level_1(screen):
 
         player_rect = dragon.rect.copy()
 
-        # Проверка на столкновение с огнем
-        if player_rect.colliderect(fire.rect):
+        # Проверка на заход в координаты огня через маски
+        offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
+        if dragon.mask.overlap(fire.mask, offset):
+            print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
             ENV.display_screen = 1
             return
@@ -183,7 +221,6 @@ def level_1(screen):
                     player_rect.top = wall.bottom
                 elif keys[pygame.K_s]:
                     player_rect.bottom = wall.top
-
 
         dragon.rect = player_rect
 
@@ -214,10 +251,6 @@ def level_1(screen):
 
     pygame.quit()
     sys.exit()
-
-
-
-
 
 
 if __name__ == "__main__":
