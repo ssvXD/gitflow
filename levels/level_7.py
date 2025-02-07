@@ -159,15 +159,23 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Лабиринт в аду")
 
 walls = [
-    pygame.Rect(45, 445, 100, 20),
-    pygame.Rect(192, 413, 100, 20),
-    pygame.Rect(328, 386, 100, 20),
-    pygame.Rect(458, 361, 100, 20),
-    pygame.Rect(590, 540, 100, 20)
+    pygame.Rect(59, 156, 20, 20),
+    pygame.Rect(89, 250, 20, 20),
+    pygame.Rect(145, 294, 20, 20),
+    pygame.Rect(195, 510, 20, 20),
+    pygame.Rect(250, 480, 20, 20),
+    pygame.Rect(458, 361, 20, 20),
+    pygame.Rect(332, 415, 20, 20),
+    pygame.Rect(504, 320, 20, 20),
+    pygame.Rect(553, 255, 20, 20),
+    pygame.Rect(607, 194, 20, 20),
+    pygame.Rect(712, 111, 20, 20),
+    pygame.Rect(660, 157, 20, 20)
+
 ]
 
 start_point = pygame.Rect(50, 50, 50, 50)
-end_point = pygame.Rect(700, 500, 50, 50)
+end_point = pygame.Rect(719, 33, 50, 50)
 
 # Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
@@ -198,7 +206,7 @@ def game_over_screen(screen):
     ENV.display_screen = 0
 
 
-def level_3(screen):
+def level_7(screen):
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -272,4 +280,4 @@ def level_3(screen):
 
 
 if __name__ == "__main__":
-    level_3(screen)
+    level_7(screen)

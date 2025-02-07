@@ -141,10 +141,10 @@ class FireSprite(pygame.sprite.Sprite):
 
 
 # Load images
-dragon_sheet1 = load_image("AnimationSheet_Character.png")
-dragon_sheet2 = load_image("AnimationSheet_Character2.png")
-background_image = load_image("back.jpg")
-fire_sheet = load_image("ff-Photoroom.png")
+dragon_sheet1 = load_image("./AnimationSheet_Character.png")
+dragon_sheet2 = load_image("./AnimationSheet_Character2.png")
+background_image = load_image("./back.jpg")
+fire_sheet = load_image("./ff-Photoroom.png")
 
 # Game settings
 WIDTH, HEIGHT = 800, 600
@@ -159,22 +159,24 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Лабиринт в аду")
 
 walls = [
-    pygame.Rect(45, 445, 100, 20),
-    pygame.Rect(192, 413, 100, 20),
-    pygame.Rect(328, 386, 100, 20),
-    pygame.Rect(458, 361, 100, 20),
-    pygame.Rect(590, 540, 100, 20)
+    pygame.Rect(50, 190, 100, 20),
+    pygame.Rect(220, 300, 100, 20),
+    pygame.Rect(50, 510, 100, 20),
+    pygame.Rect(220, 510, 100, 20),
+    pygame.Rect(390, 510, 100, 20),
+    pygame.Rect(560, 510, 100, 20)
 ]
 
 start_point = pygame.Rect(50, 50, 50, 50)
 end_point = pygame.Rect(700, 500, 50, 50)
 
 # Create a single dragon character
+# Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
-fire = FireSprite(fire_sheet, 9, 1, 592, 278)  # Создаем спрайт огня
-#fire2 = FireSprite(fire_sheet, 9, 1, 300, 0)
-#fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)
-
+fire = FireSprite(fire_sheet, 9, 1, 150, 0)  # Огонь 1 остается наверху
+fire2 = FireSprite(fire_sheet, 9, 1, 155, 320)  # Огонь 2 опущен между стенами
+fire3 = FireSprite(fire_sheet, 9, 1, 325, 320)  # Огонь 3 опущен между стенами
+fire4 = FireSprite(fire_sheet, 9, 1, 510, 320)
 
 def draw_walls():
     for wall in walls:
@@ -190,15 +192,14 @@ def game_over_screen(screen):
     screen.fill(GAME_OVER_COLOR)
     font = pygame.font.Font(None, 74)
     text = font.render("Игра окончена!", True, (255, 255, 255))
-
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(text, text_rect)
     pygame.display.flip()
-    pygame.time.delay(1000)
+    pygame.time.delay(3000)
     ENV.display_screen = 0
 
 
-def level_3(screen):
+def level_2(screen):
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -206,8 +207,6 @@ def level_3(screen):
             if event.type == pygame.QUIT:
                 ENV.display_screen = None
                 return
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                print(event.pos)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Прыжок только если на земле
                     dragon.is_jumping = True
@@ -227,12 +226,12 @@ def level_3(screen):
 
         # Проверка на заход в координаты огня через маски
         offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
-        #offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
-        #offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
-        if dragon.mask.overlap(fire.mask, offset) :
+        offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
+        offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
+        if dragon.mask.overlap(fire.mask, offset) or dragon.mask.overlap(fire2.mask, offset2) or dragon.mask.overlap(fire3.mask, offset3):
             print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
-            ENV.display_screen = 0
+            ENV.display_screen = 1
             return
 
         # Проверка на столкновение со стенами
@@ -248,10 +247,10 @@ def level_3(screen):
             font = pygame.font.Font(None, 74)
             text = font.render("Вы остались живы!", True, (255, 255, 255))
             text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-            enviroment.counter += 1
             screen.blit(text, text_rect)
             pygame.display.flip()
-            pygame.time.delay(1000)
+            pygame.time.delay(3000)
+            enviroment.counter += 1
             ENV.display_screen = 0
             return
 
@@ -267,9 +266,9 @@ def level_3(screen):
 
         clock.tick(FPS)
 
-    #pygame.quit()
-    #sys.exit()
+    pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
-    level_3(screen)
+    level_2(screen)

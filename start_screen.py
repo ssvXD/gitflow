@@ -1,14 +1,13 @@
 import pygame
 import random
 import time
-import os
 import sys
 
 import enviroment
-import level1_2
 import ploat
 from enviroment import ENV
-import level_1
+from levels import level_3, level1_2, level_2, level_4, level_5, level_6, level_7, level_8
+
 
 def load_image(filename):
     try:
@@ -151,10 +150,22 @@ def start_screen(screen):
                     print("сасиски5")
                     ENV.display_screen = 5
                     return
-                elif sprite6.rect.collidepoint(mouse_pos)and enviroment.counter >= 5:
+                elif sprite6.rect.collidepoint(mouse_pos) and enviroment.counter >= 5:
                     # Вход в 6 уровень
                     print("сасиски6")
                     ENV.display_screen = 6
+                    return
+
+                elif sprite7.rect.collidepoint(mouse_pos) and enviroment.counter >= 6:
+                    # Вход в 7 уровень
+                    print("сасиски7")
+                    ENV.display_screen = 7
+                    return
+
+                elif sprite8.rect.collidepoint(mouse_pos) and enviroment.counter >= 7:
+                    # Вход в 8 уровень
+                    print("сасиски8")
+                    ENV.display_screen = 8
                     return
 
         screen.fill((0, 0, 0))
@@ -221,6 +232,12 @@ if __name__ == '__main__':
         if ENV.display_screen == 6:
             pygame.mixer.music.stop()
             level_6.level_6(screen)
+        if ENV.display_screen == 7:
+            pygame.mixer.music.stop()
+            level_7.level_7(screen)
+        if ENV.display_screen == 8:
+            pygame.mixer.music.stop()
+            level_8.level_8(screen)
 
 
 
