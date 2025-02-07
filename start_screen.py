@@ -37,11 +37,11 @@ def start_screen(screen):
     all_sprites = pygame.sprite.Group()
 
     # Красная надпись сверху
-    #font = pygame.font.Font(None, 36)
-    #text = font.render("Choose the level of your punishment", True, (255, 0, 0))
-    #text_x = width // 2 - text.get_width() // 2
-    #text_y = 50  # Отступ сверху
-    #screen.blit(text, (text_x, text_y))
+    font = pygame.font.Font(None, 36)
+    text = font.render("Choose the level of your punishment", True, (255, 0, 0))
+    text_x = width // 2 - text.get_width() // 2
+    text_y = 50  # Отступ сверху
+    screen.blit(text, (text_x, text_y))
 
     # Кнопка первого уровня
     sprite = pygame.sprite.Sprite()

@@ -1,10 +1,9 @@
 import pygame
 import sys
 from enviroment import ENV
-import os
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+
 # Initialize all_sprites group
 all_sprites = pygame.sprite.Group()
 
@@ -200,14 +199,16 @@ def level_1(screen):
                 ENV.display_screen = None
                 return
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not dragon.is_jumping and dragon.on_ground: # Прыгаем только если на земле
+                if event.key == pygame.K_SPACE and dragon.on_ground: # Прыгаем только если на земле
                     dragon.is_jumping = True # Включаем флаг прыжка
+                    dragon.on_ground = False  # Теперь мы не на земле
+                    dragon.y_velocity = dragon.jump_force  # Даем начальную скорость вверх
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d]:  # Move right
             dragon.rect.x += 5
             dragon.left = False
-            dragon.moving = Trueц
+            dragon.moving = True
         elif keys[pygame.K_a]:  # Move left
             dragon.rect.x -= 5
             dragon.left = True
@@ -244,15 +245,13 @@ def level_1(screen):
         if not dragon.on_ground:
             dragon.y_velocity += dragon.gravity
 
-        player_rect = dragon.rect.copy()
+        # --- Горизонтальное движение и коллизии со стенами ---
+        player_rect = dragon.rect.copy()  # Копия для проверки столкновений
 
-        # Проверка на заход в координаты огня через маски
-        offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
-        if dragon.mask.overlap(fire.mask, offset):
-            print("Игрок столкнулся с огнем!")  # Отладочное сообщение
-            game_over_screen(screen)
-            ENV.display_screen = 1
-            return
+        if keys[pygame.K_d]:
+            player_rect.x += 5
+        elif keys[pygame.K_a]:
+            player_rect.x -= 5
 
         for wall in walls:
             if player_rect.colliderect(wall):
@@ -261,7 +260,18 @@ def level_1(screen):
                 elif keys[pygame.K_a]:
                     player_rect.left = wall.right
 
-        dragon.rect = player_rect
+        dragon.rect.x = player_rect.x  # Применяем горизонтальное движение
+
+        # --- Вертикальное движение и коллизии с платформами и полом ---
+        # Вертикальное движение уже обработано в dragon.update() и проверках выше
+
+        # Проверка на заход в координаты огня через маски
+        offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
+        if dragon.mask.overlap(fire.mask, offset):
+            print("Игрок столкнулся с огнем!")  # Отладочное сообщение
+            game_over_screen(screen)
+            ENV.display_screen = 1
+            return
 
         # Проверка на достижение конечной точки
         if player_rect.colliderect(end_point):

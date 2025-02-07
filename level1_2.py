@@ -164,7 +164,7 @@ def game_over_screen(screen):
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(text, text_rect)
     pygame.display.flip()
-    pygame.time.delay(3000)
+    pygame.time.delay(1000)
     ENV.display_screen = 0
 
 
@@ -210,7 +210,7 @@ def level_1(screen):
         if dragon.mask.overlap(fire.mask, offset) or dragon.mask.overlap(fire2.mask, offset2) or dragon.mask.overlap(fire3.mask, offset3):
             print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
-            ENV.display_screen = 1
+            ENV.display_screen = 0
             return
 
         for wall in walls:
@@ -234,8 +234,7 @@ def level_1(screen):
             text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
             screen.blit(text, text_rect)
             pygame.display.flip()
-            pygame.time.delay(3000)
-            running = False
+            pygame.time.delay(1000)
             ENV.display_screen = 0
             return
 
@@ -251,8 +250,8 @@ def level_1(screen):
 
         clock.tick(FPS)
 
-    pygame.quit()
-    sys.exit()
+    #pygame.quit()
+    #sys.exit()
 
 
 if __name__ == "__main__":
