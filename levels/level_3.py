@@ -1,7 +1,5 @@
 import pygame
 import sys
-
-import enviroment
 from enviroment import ENV
 
 pygame.init()
@@ -159,10 +157,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Лабиринт в аду")
 
 walls = [
-    pygame.Rect(50, 190, 100, 20),
-    pygame.Rect(200, 190, 100, 20),
-    pygame.Rect(350, 190, 100, 20),
-    pygame.Rect(500, 190, 100, 20),
+    pygame.Rect(45, 445, 100, 20),
+    pygame.Rect(192, 413, 100, 20),
+    pygame.Rect(328, 386, 100, 20),
+    pygame.Rect(458, 361, 100, 20),
     pygame.Rect(590, 540, 100, 20)
 ]
 
@@ -171,9 +169,9 @@ end_point = pygame.Rect(700, 500, 50, 50)
 
 # Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
-fire = FireSprite(fire_sheet, 9, 1, 150, 0)  # Создаем спрайт огня
-fire2 = FireSprite(fire_sheet, 9, 1, 300, 0)
-fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)
+fire = FireSprite(fire_sheet, 9, 1, 592, 278)  # Создаем спрайт огня
+#fire2 = FireSprite(fire_sheet, 9, 1, 300, 0)
+#fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)
 
 
 def draw_walls():
@@ -194,11 +192,11 @@ def game_over_screen(screen):
     screen.blit(text, text_rect)
     pygame.display.flip()
     pygame.time.delay(1000)
-    level_1(screen)
+    level_3(screen)
     ENV.display_screen = 0
 
 
-def level_1(screen):
+def level_3(screen):
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -206,6 +204,8 @@ def level_1(screen):
             if event.type == pygame.QUIT:
                 ENV.display_screen = None
                 return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Прыжок только если на земле
                     dragon.is_jumping = True
@@ -225,9 +225,9 @@ def level_1(screen):
 
         # Проверка на заход в координаты огня через маски
         offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
-        offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
-        offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
-        if dragon.mask.overlap(fire.mask, offset) or dragon.mask.overlap(fire2.mask, offset2) or dragon.mask.overlap(fire3.mask, offset3):
+        #offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
+        #offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
+        if dragon.mask.overlap(fire.mask, offset) :
             print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
             ENV.display_screen = 0
@@ -245,7 +245,6 @@ def level_1(screen):
             screen.fill((0, 128, 0))
             font = pygame.font.Font(None, 74)
             text = font.render("Вы остались живы!", True, (255, 255, 255))
-            enviroment.counter += 1
             text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
             screen.blit(text, text_rect)
             pygame.display.flip()
@@ -270,4 +269,4 @@ def level_1(screen):
 
 
 if __name__ == "__main__":
-    level_1(screen)
+    level_3(screen)

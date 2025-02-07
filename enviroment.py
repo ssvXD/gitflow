@@ -27,4 +27,5 @@ class Movable_Block(Block):
         self.pos = (self.pos[0] + self.velocity[0], self.pos[1] + self.velocity[1])
         self.rect = pygame.Rect(self.pos, self.size)
 
+counter = 0
 

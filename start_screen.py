@@ -4,6 +4,7 @@ import time
 import os
 import sys
 
+import enviroment
 import level1_2
 import ploat
 from enviroment import ENV
@@ -130,27 +131,31 @@ def start_screen(screen):
                     print("сасиски1")
                     ENV.display_screen = 1
                     return
-                elif sprite2.rect.collidepoint(mouse_pos):
+                elif sprite2.rect.collidepoint(mouse_pos) and enviroment.counter >= 1:
                     # Вход во 2 уровень
                     print("сасиски2")
-                elif sprite3.rect.collidepoint(mouse_pos):
+                    ENV.display_screen = 2
+                    return
+                elif sprite3.rect.collidepoint(mouse_pos) and enviroment.counter >= 2:
                     # Вход в 3 уровень
                     print("сасиски3")
-                elif sprite4.rect.collidepoint(mouse_pos):
+                    ENV.display_screen = 3
+                    return
+                elif sprite4.rect.collidepoint(mouse_pos) and enviroment.counter >= 3:
                     # Вход в 4 уровень
                     print("сасиски4")
-                elif sprite5.rect.collidepoint(mouse_pos):
+                    ENV.display_screen = 4
+                    return
+                elif sprite5.rect.collidepoint(mouse_pos) and enviroment.counter >= 4:
                     # Вход в 5 уровень
                     print("сасиски5")
-                elif sprite6.rect.collidepoint(mouse_pos):
+                    ENV.display_screen = 5
+                    return
+                elif sprite6.rect.collidepoint(mouse_pos)and enviroment.counter >= 5:
                     # Вход в 6 уровень
                     print("сасиски6")
-                elif sprite7.rect.collidepoint(mouse_pos):
-                    # Вход в 7 уровень
-                    print("сасиски7")
-                elif sprite8.rect.collidepoint(mouse_pos):
-                    # Вход в 8 уровень
-                    print("сасиски8")
+                    ENV.display_screen = 6
+                    return
 
         screen.fill((0, 0, 0))
         # Рисуем текст сверху
@@ -160,6 +165,7 @@ def start_screen(screen):
         pygame.display.flip()
 
 def welcome_screen(screen):
+    enviroment.counter = 0
     start_time = time.time()
     running = True
     while running:
@@ -200,6 +206,23 @@ if __name__ == '__main__':
         if ENV.display_screen == 1:
             pygame.mixer.music.stop()
             level1_2.level_1(screen)
+        if ENV.display_screen == 2:
+            pygame.mixer.music.stop()
+            level_2.level_2(screen)
+        if ENV.display_screen == 3:
+            pygame.mixer.music.stop()
+            level_3.level_3(screen)
+        if ENV.display_screen == 4:
+            pygame.mixer.music.stop()
+            level_4.level_4(screen)
+        if ENV.display_screen == 5:
+            pygame.mixer.music.stop()
+            level_5.level_5(screen)
+        if ENV.display_screen == 6:
+            pygame.mixer.music.stop()
+            level_6.level_6(screen)
+
+
 
         if ENV.display_screen == -1:
             ploat.ploat(screen)
