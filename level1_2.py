@@ -32,6 +32,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.jump_count = 10
         self.original_y = y
         self.mask = pygame.mask.from_surface(self.image)  # Создаем маску
+        self.gravity = 0.5  # Сила гравитации
+        self.velocity_y = 0  # Скорость по вертикали
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -53,6 +55,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
         if self.is_jumping:
             self.jump()
 
+        # Применяем гравитацию
+        self.velocity_y += self.gravity
+        self.rect.y += self.velocity_y
+
+        # Проверка на столкновение с землей (стенами)
+        self.check_collision_with_walls()
+
     def jump(self):
         if self.jump_count >= -10:
             neg = 1
@@ -63,7 +72,26 @@ class AnimatedSprite(pygame.sprite.Sprite):
         else:
             self.is_jumping = False
             self.jump_count = 10
-            self.rect.y = self.original_y
+            self.velocity_y = 0  # Сбрасываем скорость после прыжка
+
+    def check_collision_with_walls(self):
+        # Проверяем, находится ли персонаж на стене
+        on_ground = False
+        for wall in walls:
+            if self.rect.colliderect(wall):
+                if self.velocity_y > 0:  # Если персонаж падает вниз
+                    self.rect.bottom = wall.top
+                    self.velocity_y = 0
+                    on_ground = True
+                elif self.velocity_y < 0:  # Если персонаж движется вверх
+                    self.rect.top = wall.bottom
+                    self.velocity_y = 0
+
+        # Если персонаж не на земле, он падает
+        if not on_ground and not self.is_jumping:
+            self.velocity_y += self.gravity
+        else:
+            self.velocity_y = 0
 
 
 class FireSprite(pygame.sprite.Sprite):
@@ -134,7 +162,6 @@ walls = [
     pygame.Rect(350, 190, 100, 20),
     pygame.Rect(500, 190, 100, 20),
     pygame.Rect(590, 540, 100, 20)
-
 ]
 
 start_point = pygame.Rect(50, 50, 50, 50)
@@ -177,7 +204,7 @@ def level_1(screen):
                 ENV.display_screen = None
                 return
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Change K_w to K_SPACE
+                if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Прыжок только если на земле
                     dragon.is_jumping = True
                     dragon.original_y = dragon.rect.y
 
@@ -190,18 +217,8 @@ def level_1(screen):
             dragon.rect.x -= 5
             dragon.left = True
             dragon.moving = True
-        elif keys[pygame.K_w]:  # Move up
-            dragon.rect.y -= 5
-            dragon.moving = True
-            dragon.left = False
-        elif keys[pygame.K_s]:  # Move down
-            dragon.rect.y += 5
-            dragon.left = False
-            dragon.moving = True
         else:
             dragon.moving = False
-
-        player_rect = dragon.rect.copy()
 
         # Проверка на заход в координаты огня через маски
         offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
@@ -213,21 +230,15 @@ def level_1(screen):
             ENV.display_screen = 0
             return
 
+        # Проверка на столкновение со стенами
         for wall in walls:
-            if player_rect.colliderect(wall):
-                if keys[pygame.K_d]:
-                    player_rect.right = wall.left
-                elif keys[pygame.K_a]:
-                    player_rect.left = wall.right
-                elif keys[pygame.K_w]:
-                    player_rect.top = wall.bottom
-                elif keys[pygame.K_s]:
-                    player_rect.bottom = wall.top
-
-        dragon.rect = player_rect
+            if dragon.rect.colliderect(wall):
+                if dragon.velocity_y > 0:  # Если персонаж падает вниз
+                    dragon.rect.bottom = wall.top
+                    dragon.velocity_y = 0
 
         # Проверка на достижение конечной точки
-        if player_rect.colliderect(end_point):
+        if dragon.rect.colliderect(end_point):
             screen.fill((0, 128, 0))
             font = pygame.font.Font(None, 74)
             text = font.render("Вы остались живы!", True, (255, 255, 255))
