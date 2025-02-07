@@ -207,7 +207,7 @@ def level_1(screen):
         if keys[pygame.K_d]:  # Move right
             dragon.rect.x += 5
             dragon.left = False
-            dragon.moving = True
+            dragon.moving = Trueц
         elif keys[pygame.K_a]:  # Move left
             dragon.rect.x -= 5
             dragon.left = True

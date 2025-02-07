@@ -188,11 +188,19 @@ if __name__ == '__main__':
     welcome_screen(screen)
     plt(screen)
 
+    mzk = 'mzk.mp3'
+    pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load(mzk)
+    pygame.mixer.music.play()
+
     while ENV.display_screen is not None:
         if ENV.display_screen == 0:
             start_screen(screen)
         if ENV.display_screen == 1:
+            pygame.mixer.music.stop()
             level1_2.level_1(screen)
+
         if ENV.display_screen == -1:
             ploat.ploat(screen)
 
