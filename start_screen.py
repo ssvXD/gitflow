@@ -3,6 +3,9 @@ import random
 import time
 import os
 import sys
+
+import level1_2
+import ploat
 from enviroment import ENV
 import level_1
 
@@ -34,11 +37,11 @@ def start_screen(screen):
     all_sprites = pygame.sprite.Group()
 
     # Красная надпись сверху
-    font = pygame.font.Font(None, 50)
-    text = font.render("Choose the level of your punishment", True, (255, 0, 0))
-    text_x = width // 2 - text.get_width() // 2
-    text_y = 50  # Отступ сверху
-    screen.blit(text, (text_x, text_y))
+    #font = pygame.font.Font(None, 36)
+    #text = font.render("Choose the level of your punishment", True, (255, 0, 0))
+    #text_x = width // 2 - text.get_width() // 2
+    #text_y = 50  # Отступ сверху
+    #screen.blit(text, (text_x, text_y))
 
     # Кнопка первого уровня
     sprite = pygame.sprite.Sprite()
@@ -114,11 +117,12 @@ def start_screen(screen):
 
     running = True
     while running:
+        pygame.init()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ENV.display_screen = None
                 return
-
+                 # начинаем игру
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if sprite.rect.collidepoint(mouse_pos):
@@ -150,7 +154,7 @@ def start_screen(screen):
 
         screen.fill((0, 0, 0))
         # Рисуем текст сверху
-        screen.blit(text, (text_x, text_y))
+        #screen.blit(text, (text_x, text_y))
         # Рисуем кнопки
         all_sprites.draw(screen)
         pygame.display.flip()
@@ -162,16 +166,19 @@ def welcome_screen(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ENV.display_screen = None
+                running = False
                 return
 
         draw(screen)
         pixiles(screen)
         pygame.display.flip()
-
         current_time = time.time()
         if current_time - start_time > 3:
-            running = False
             ENV.display_screen = 0
+            return
+
+def plt(screen):
+    ploat.ploat(screen)
 
 if __name__ == '__main__':
     pygame.init()
@@ -179,11 +186,16 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
 
     welcome_screen(screen)
+    plt(screen)
 
     while ENV.display_screen is not None:
         if ENV.display_screen == 0:
             start_screen(screen)
-        else:
-            level_1.level_1(screen)
+        if ENV.display_screen == 1:
+            level1_2.level_1(screen)
+        if ENV.display_screen == -1:
+            ploat.ploat(screen)
 
-    pygame.quit()
+
+
+
