@@ -205,7 +205,9 @@ def level_1(screen):
 
         # Проверка на заход в координаты огня через маски
         offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
-        if dragon.mask.overlap(fire.mask, offset):
+        offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
+        offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
+        if dragon.mask.overlap(fire.mask, offset) or dragon.mask.overlap(fire2.mask, offset2) or dragon.mask.overlap(fire3.mask, offset3):
             print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
             ENV.display_screen = 1
@@ -228,7 +230,7 @@ def level_1(screen):
         if player_rect.colliderect(end_point):
             screen.fill((0, 128, 0))
             font = pygame.font.Font(None, 74)
-            text = font.render("You are alive", True, (255, 255, 255))
+            text = font.render("Вы остались живы!", True, (255, 255, 255))
             text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
             screen.blit(text, text_rect)
             pygame.display.flip()
