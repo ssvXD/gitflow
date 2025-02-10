@@ -6,7 +6,6 @@ from enviroment import ENV
 
 pygame.init()
 
-# Initialize all_sprites group
 all_sprites = pygame.sprite.Group()
 
 
@@ -19,7 +18,6 @@ def load_image(filename):
         sys.exit()
 
 
-# AnimatedSprite class definition
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, x, y):
         super().__init__(all_sprites)
@@ -33,9 +31,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.is_jumping = False
         self.jump_count = 10
         self.original_y = y
-        self.mask = pygame.mask.from_surface(self.image)  # Создаем маску
-        self.gravity = 0.5  # Сила гравитации
-        self.velocity_y = 0  # Скорость по вертикали
+        self.mask = pygame.mask.from_surface(self.image)
+        self.gravity = 0.5
+        self.velocity_y = 0
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -57,11 +55,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
         if self.is_jumping:
             self.jump()
 
-        # Применяем гравитацию
         self.velocity_y += self.gravity
         self.rect.y += self.velocity_y
 
-        # Проверка на столкновение с землей (стенами)
         self.check_collision_with_walls()
 
     def jump(self):
@@ -74,22 +70,20 @@ class AnimatedSprite(pygame.sprite.Sprite):
         else:
             self.is_jumping = False
             self.jump_count = 10
-            self.velocity_y = 0  # Сбрасываем скорость после прыжка
+            self.velocity_y = 0
 
     def check_collision_with_walls(self):
-        # Проверяем, находится ли персонаж на стене
         on_ground = False
         for wall in walls:
             if self.rect.colliderect(wall):
-                if self.velocity_y > 0:  # Если персонаж падает вниз
+                if self.velocity_y > 0:
                     self.rect.bottom = wall.top
                     self.velocity_y = 0
                     on_ground = True
-                elif self.velocity_y < 0:  # Если персонаж движется вверх
+                elif self.velocity_y < 0:
                     self.rect.top = wall.bottom
                     self.velocity_y = 0
 
-        # Если персонаж не на земле, он падает
         if not on_ground and not self.is_jumping:
             self.velocity_y += self.gravity
         else:
@@ -106,11 +100,11 @@ class FireSprite(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.animation_speed = 0.1  # Скорость анимации
+        self.animation_speed = 0.1
         self.last_update = pygame.time.get_ticks()
-        self.x = x  # Сохраняем координату x
-        self.y = y  # Сохраняем координату y
-        self.mask = pygame.mask.from_surface(self.image)  # Создаем маску
+        self.x = x
+        self.y = y
+        self.mask = pygame.mask.from_surface(self.image)
 
     def cut_sheet(self, sheet, columns, rows):
         frame_width = sheet.get_width() // columns
@@ -120,7 +114,6 @@ class FireSprite(pygame.sprite.Sprite):
         for j in range(rows):
             for i in range(columns):
                 frame_location = (frame_width * i, frame_height * j)
-                # Убедитесь, что вы не выходите за пределы изображения
                 if (frame_location[0] + frame_width <= sheet.get_width() and
                         frame_location[1] + frame_height <= sheet.get_height()):
                     self.frames.append(sheet.subsurface(pygame.Rect(
@@ -140,13 +133,11 @@ class FireSprite(pygame.sprite.Sprite):
         self.image.set_colorkey((0, 0, 0))
 
 
-# Load images
 dragon_sheet1 = load_image("./AnimationSheet_Character.png")
 dragon_sheet2 = load_image("./AnimationSheet_Character2.png")
 background_image = load_image("./back.jpg")
 fire_sheet = load_image("./ff-Photoroom.png")
 
-# Game settings
 WIDTH, HEIGHT = 800, 600
 FPS = 60
 WALL_COLOR = (255, 0, 0)
@@ -170,12 +161,10 @@ walls = [
 start_point = pygame.Rect(50, 50, 50, 50)
 end_point = pygame.Rect(700, 500, 50, 50)
 
-# Create a single dragon character
-# Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
-fire = FireSprite(fire_sheet, 9, 1, 150, 0)  # Огонь 1 остается наверху
-fire2 = FireSprite(fire_sheet, 9, 1, 296, 0)  # Огонь 2 опущен между стенами
-fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)  # Огонь 3 опущен между стенами
+fire = FireSprite(fire_sheet, 9, 1, 150, 0)
+fire2 = FireSprite(fire_sheet, 9, 1, 296, 0)
+fire3 = FireSprite(fire_sheet, 9, 1, 450, 0)
 
 
 def draw_walls():
@@ -208,40 +197,36 @@ def level_6(screen):
                 ENV.display_screen = None
                 return
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not dragon.is_jumping:  # Прыжок только если на земле
+                if event.key == pygame.K_SPACE and not dragon.is_jumping:
                     dragon.is_jumping = True
                     dragon.original_y = dragon.rect.y
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d]:  # Move right
+        if keys[pygame.K_d]:
             dragon.rect.x += 5
             dragon.left = False
             dragon.moving = True
-        elif keys[pygame.K_a]:  # Move left
+        elif keys[pygame.K_a]:
             dragon.rect.x -= 5
             dragon.left = True
             dragon.moving = True
         else:
             dragon.moving = False
 
-        # Проверка на заход в координаты огня через маски
         offset = (fire.rect.x - dragon.rect.x, fire.rect.y - dragon.rect.y)
         offset2 = (fire2.rect.x - dragon.rect.x, fire2.rect.y - dragon.rect.y)
         offset3 = (fire3.rect.x - dragon.rect.x, fire3.rect.y - dragon.rect.y)
         if dragon.mask.overlap(fire.mask, offset) or dragon.mask.overlap(fire2.mask, offset2) or dragon.mask.overlap(fire3.mask, offset3):
-            print("Игрок столкнулся с огнем!")  # Отладочное сообщение
             game_over_screen(screen)
             ENV.display_screen = 1
             return
 
-        # Проверка на столкновение со стенами
         for wall in walls:
             if dragon.rect.colliderect(wall):
-                if dragon.velocity_y > 0:  # Если персонаж падает вниз
+                if dragon.velocity_y > 0:
                     dragon.rect.bottom = wall.top
                     dragon.velocity_y = 0
 
-        # Проверка на достижение конечной точки
         if dragon.rect.colliderect(end_point):
             screen.fill((0, 128, 0))
             font = pygame.font.Font(None, 74)
@@ -258,7 +243,6 @@ def level_6(screen):
         draw_walls()
         draw_start_end()
 
-        # Update and draw all sprites
         all_sprites.update()
         all_sprites.draw(screen)
 
