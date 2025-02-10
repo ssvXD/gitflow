@@ -120,7 +120,6 @@ class FireSprite(pygame.sprite.Sprite):
         for j in range(rows):
             for i in range(columns):
                 frame_location = (frame_width * i, frame_height * j)
-                # Убедитесь, что вы не выходите за пределы изображения
                 if (frame_location[0] + frame_width <= sheet.get_width() and
                         frame_location[1] + frame_height <= sheet.get_height()):
                     self.frames.append(sheet.subsurface(pygame.Rect(
@@ -135,18 +134,16 @@ class FireSprite(pygame.sprite.Sprite):
                 self.image = pygame.transform.flip(self.frames[self.cur_frame], True, False)
             else:
                 self.image = self.frames[self.cur_frame]
-
-        # Убедитесь, что у вашего изображения есть прозрачный фон
-        self.image.set_colorkey((0, 0, 0))  # Установите цвет ключа для прозрачности
+        self.image.set_colorkey((0, 0, 0)) 
 
 
-# Load images
+
 dragon_sheet1 = load_image("./AnimationSheet_Character.png")
 dragon_sheet2 = load_image("./AnimationSheet_Character2.png")
 background_image = load_image("./back.jpg")
 fire_sheet = load_image("./ff-Photoroom.png")
 
-# Game settings
+
 WIDTH, HEIGHT = 800, 600
 FPS = 60
 WALL_COLOR = (255, 0, 0)
@@ -168,8 +165,6 @@ walls = [
 
 start_point = pygame.Rect(50, 50, 50, 50)
 end_point = pygame.Rect(700, 500, 50, 50)
-
-# Create a single dragon character
 dragon = AnimatedSprite(dragon_sheet1, 8, 1, 50, 50)
 fire = FireSprite(fire_sheet, 9, 1, 150, 0)  # Создаем спрайт огня
 fire2 = FireSprite(fire_sheet, 9, 1, 300, 0)
