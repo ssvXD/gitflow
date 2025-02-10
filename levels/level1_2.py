@@ -6,7 +6,7 @@ from enviroment import ENV
 
 pygame.init()
 
-# Initialize all_sprites group
+
 all_sprites = pygame.sprite.Group()
 
 
@@ -19,7 +19,7 @@ def load_image(filename):
         sys.exit()
 
 
-# AnimatedSprite class definition
+
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, x, y):
         super().__init__(all_sprites)
